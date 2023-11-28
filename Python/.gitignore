@@ -1,0 +1,11 @@
+# Python gitignore
+
+.idea/
+
+# Python env
+venv/
+env/
+__env__/
+
+# Compiled Python files
+__pycache__/
