@@ -3,7 +3,9 @@
 .idea/
 
 # Python env
-venv/
+#venv/
+# I DON'T CARE
+
 env/
 __env__/
 
