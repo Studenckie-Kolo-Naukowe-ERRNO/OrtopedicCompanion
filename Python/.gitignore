@@ -1,5 +1,6 @@
 # Python gitignore
 
+runs/
 .idea/
 
 # Python env
