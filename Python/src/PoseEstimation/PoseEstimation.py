@@ -1,8 +1,14 @@
-from ultralytics import YOLO
-import torch
-import warnings
 import math
 import numpy
+
+from ultralytics import YOLO
+import torch
+
+import os
+import warnings
+
+MODEL_PATH = "yolov8m-pose.pt"
+
 
 class PoseEstimator:
     def __init__(self, src=0):
@@ -10,14 +16,18 @@ class PoseEstimator:
         if self.device == 'cpu':
             warnings.warn("The model will be using the *CPU*, instead of the CUDA.")
 
-        # check if file exists @TODO
-        self.model = YOLO('yolov8m-pose.pt')
+        # check if file is downloaded
+        if os.path.exists(MODEL_PATH):
+            self.model = torch.load(MODEL_PATH)
+        else:
+            self.model = YOLO(MODEL_PATH)
+
         self.model.to(self.device)
 
         self.conv = 0.3
         self.source = src
 
-        # what is the start position, left or right?
+        # what is the start position, left or right? @TODO
         self.trackedPose = [0, 0]
 
     def __estimateAllPoses(self) -> list:
