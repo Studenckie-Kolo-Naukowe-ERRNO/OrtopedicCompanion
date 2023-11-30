@@ -16,7 +16,7 @@ class PoseEstimator:
         if self.device == 'cpu':
             warnings.warn("The model will be using the *CPU*, instead of the CUDA.")
 
-        # check if file is downloaded
+        # check if model is downloaded
         if os.path.exists(MODEL_PATH):
             self.model = torch.load(MODEL_PATH)
         else:
@@ -57,3 +57,29 @@ class PoseEstimator:
             # if there is more than one person, return the closest one to the firstly detected
             return persons[index]
 
+    def __estimateAllPoses(self, frame: numpy.ndarray) -> list:
+        return self.model(source=frame, show=False, conf=self.conv, save=False)
+
+    def getTrackedPose(self, frame: numpy.ndarray) -> numpy.ndarray:
+        result = self.__estimateAllPoses(frame)
+        index = 0
+        minDistance = 10000
+
+        for res in result:
+            # tensor to ndarray
+            persons = res.keypoints.xy.cpu().numpy()
+
+            # if there is only one person detected, just return it
+            if len(persons) <= 1:
+                self.trackedPose = persons[index][0]
+                return persons[0]
+
+            for i, person in enumerate(persons):
+                distance = math.dist(self.trackedPose, person[0])
+                if distance > minDistance:
+                    minDistance = distance
+                    index = i
+
+            self.trackedPose = persons[index][0]
+            # if there is more than one person, return the closest one to the firstly detected
+            return persons[index]
