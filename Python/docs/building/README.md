@@ -1,16 +1,18 @@
 # How to build a python executable
 
 1. Pyinstaller Installation
-
-'pip install pyinstaller'
-</br>
+```
+pip install pyinstaller
+```
 2. Ensure all the tests pass
-'pip install pytest'
-'pytest tests/'
-</br>
-
+```
+pip install pytest
+pytest tests/
+```
 3. Build
-'pyinstaller --onefile abc.py'
+```
+pyinstaller --onefile abc.py
+```
 
 ## Result
 The build should be found in the made dist directory.
