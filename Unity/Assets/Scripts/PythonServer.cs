@@ -20,15 +20,17 @@ public class PythonServer : MonoBehaviour
     private List<Vector2> data;
     public List<Vector2> GetData() { return data; }
 
-    void Start()
+    private void Start()
     {
+        for (int i = 0; i < 17; i++) data.Add(new Vector2(0, 0)); // no i co mi zrobisz         q . U  . p
+
         // Receive on a separate thread so Unity doesn't freeze waiting for data
         ThreadStart ts = new ThreadStart(StartConnection);
         thread = new Thread(ts);
         thread.Start();
     }
 
-    void StartConnection()
+    private void StartConnection()
     {
         // Create the server
         server = new TcpListener(IPAddress.Any, connectionPort);
@@ -46,7 +48,7 @@ public class PythonServer : MonoBehaviour
         server.Stop();
     }
 
-    void ReceiveData()
+    private void ReceiveData()
     {
         // Read data from the network stream
         NetworkStream nwStream = client.GetStream();
@@ -69,26 +71,25 @@ public class PythonServer : MonoBehaviour
     private char SEPERATOR = '|';
 
     // Use-case specific function, need to re-write this to interpret whatever data is being sent
-    private static List<Vector2> ParseData(string dataString)
+    private List<Vector2> ParseData(string dataString)
     {
         List<Vector2> result = new List<Vector2>();
-        
         Debug.Log(dataString);
-        // Remove the parentheses
-        if (dataString.StartsWith("(") && dataString.EndsWith(")"))
-        {
-            dataString = dataString.Substring(1, dataString.Length - 2);
-        }
 
         // Split the elements into an array
-        string[] stringArray = dataString.Split(',');
+        string[] strArray = dataString.Split(SEPERATOR);
 
-        // Store as a Vector3
-        Vector2 ult = new Vector2(
-            float.Parse(stringArray[0]),
-            float.Parse(stringArray[1]));
-        
-        result.Add(ult);
+        Vector2 vec = new Vector2(0, 0);
+        for (int i = 0; i < strArray.Length; i += 2)
+        {
+            vec = new Vector2(
+                float.Parse(strArray[i]),
+                float.Parse(strArray[i + 1]));
+
+            data[(int)(i / 2)] = vec;
+        }
+
+
         return result;
     }
 }

@@ -8,7 +8,7 @@ HOST, PORT = "127.0.0.1", 25001
 
 class ClientServer:
     def __init__(self):
-        self.data = "1,2"
+        self.data = "0,0"
 
         try:
             # connect to the socket
@@ -37,11 +37,14 @@ class ClientServer:
     def sendData(self):
         #if self.isConnected() is not True:
         #    return
-
         self.sock.sendall(self.data.encode("utf-8"))
 
         response = self.sock.recv(1024).decode("utf-8")
         print(response)
+
+    def sendData(self, _data):
+        self.data = _data
+        self.sendData()
 
 
 if __name__ == "__main__":

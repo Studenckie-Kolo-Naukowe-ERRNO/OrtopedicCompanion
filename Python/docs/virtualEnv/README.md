@@ -6,7 +6,7 @@ https://www.python.org/downloads/release/python-3115/
 </br>*Note:* You need to download also the developer tool from microsoft store in order to use it as a cli.
 ### Install pip and virtualenv
 ```
-python get-pip.py
+python -m pip install -U pip
 pip install virtualenv
 ```
 How to create a virtual environment?
@@ -32,7 +32,7 @@ https://en.wikipedia.org/wiki/CUDA#GPUs_supported
 </br>https://pytorch.org/get-started/locally/
 </br>In my case it looks like this:
 ```
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ## Conclusion
