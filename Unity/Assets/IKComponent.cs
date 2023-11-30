@@ -2,32 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class IKComponent
 {
+    [SerializeField] bool shouldUseLerp = true;
+    [SerializeField] bool debugMode = true;
     [SerializeField] private Transform target;
-    [SerializeField] private Vector3 wantedPosition;
-    float snapDistance = 1f;
+    [SerializeField] private Transform DebugWantedPos;
 
-    public void MoveTarget(float f, float delta)
+    private Vector3 startPosition;
+    private Vector3 wantedPosition;
+    float moveTime = 0;
+
+    public void SetTargetPosition(Vector3 newWantedPosition)
     {
-        /*
-        Vector3 dist = wantedPosition - target.position;
+        startPosition = target.transform.position;
+        //wantedPosition = newWantedPosition;
+        wantedPosition = DebugWantedPos.position;
+        moveTime = 0;
+    }
 
-        if (dist.magnitude > snapDistance)
+    public void MoveTarget(float delta)
+    {
+        if (shouldUseLerp)
         {
-            SnapHands();
+            moveTime += delta;
+            if (moveTime > 1) 
+            {
+                if (debugMode) SetTargetPosition(Vector3.zero);
+                else return;
+            }
+            
+            target.transform.position = Vector3.Lerp(startPosition,wantedPosition, moveTime);
         }
         else
         {
-            rb.velocity = dist / delta;
+            target.transform.position = Vector3.MoveTowards(target.transform.position, DebugWantedPos.position, 0.1f);
         }
-
-        Quaternion rotationDiff = target.rotation * Quaternion.Inverse(transform.rotation);
-        rotationDiff.ToAngleAxis(out float angleInDegree, out Vector3 rotationAxis);
-
-        Vector3 rotationDiffInDegree = angleInDegree * rotationAxis;
-
-        rb.angularVelocity = (rotationDiffInDegree * Mathf.Deg2Rad / delta);
-        */
     }
 }
