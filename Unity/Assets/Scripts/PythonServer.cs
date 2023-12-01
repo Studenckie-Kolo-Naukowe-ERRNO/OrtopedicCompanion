@@ -17,12 +17,15 @@ public class PythonServer : MonoBehaviour
     private bool running;
     public bool IsRunning() { return running; }
 
-    private List<Vector2> data;
+    [SerializeField]private List<Vector2> data;
     public List<Vector2> GetData() { return data; }
 
     private void Start()
     {
-        for (int i = 0; i < 17; i++) data.Add(new Vector2(0, 0)); // no i co mi zrobisz         q . U  . p
+        data = new List<Vector2>();
+        Vector2 vec = new Vector2(0.0f, 0.0f);
+        for (int i = 0; i < 17; i++)    data.Add(vec);
+
 
         // Receive on a separate thread so Unity doesn't freeze waiting for data
         ThreadStart ts = new ThreadStart(StartConnection);

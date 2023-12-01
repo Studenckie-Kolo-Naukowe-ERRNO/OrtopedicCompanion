@@ -33,6 +33,3 @@ if __name__ == "__main__":
         if d is not np.array([1, 1]):
             print(convertData(d))
 
-
-        # Display the frame
-        cv2.imshow("Camera Feed", frame)

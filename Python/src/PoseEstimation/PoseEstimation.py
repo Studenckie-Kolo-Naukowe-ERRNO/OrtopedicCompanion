@@ -28,7 +28,7 @@ class PoseEstimator:
         self.conv = 0.3
         self.source = src
 
-        # what is the start position, left or right? @TODO
+        # The left side is the start position
         self.trackedPose = [0, 0]
 
     def __estimateAllPoses(self, frame: numpy.ndarray) -> list:
@@ -47,7 +47,7 @@ class PoseEstimator:
                 persons[index][0]
             except:
                 # nothing was detected
-                return numpy.array([1, 1])
+                return numpy.array([1.0,1.0])
 
             # if there is only one person detected, just return it
             if len(persons) <= 1:

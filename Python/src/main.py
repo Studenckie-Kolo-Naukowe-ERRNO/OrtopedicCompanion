@@ -1,5 +1,6 @@
 from PoseEstimation import *
-from Client import *
+from Client.Client import *
+
 import cv2
 import warnings
 import numpy as np
@@ -9,7 +10,10 @@ SEPERATOR = '|'
 
 def convertData(arr: np.array) -> str:
     result = ""
-    rows, cols = arr.shape
+    try:
+        rows, cols = arr.shape
+    except:
+        return "1.0|1.0"
 
     for i in range(rows):
         for j in range(cols):
@@ -17,9 +21,11 @@ def convertData(arr: np.array) -> str:
     return result
 
 
-if __name__ == "__main__":
+def main():
+    print("Script started.")
+
     est = PoseEstimator()
-    client = ClientServer()
+    cli = ClientServer()
     cap = cv2.VideoCapture(0)  # 0 corresponds to the default camera, you can change it based on your camera index
 
     while True:
@@ -32,9 +38,11 @@ if __name__ == "__main__":
             break
 
         data = est.getTrackedPose(frame)
-        if data is not np.array([1, 1]):
-            #print(convertData(data))
-            client.sendData(convertData(data))
+        if data is not numpy.array([1.0, 1.0]):
+            print(convertData(data))
+            cli.sendData(convertData(data))
 
 
-    # brute force kill the process mommy
+if __name__ == "__main__":
+    main()
+

@@ -8,14 +8,13 @@ HOST, PORT = "127.0.0.1", 25001
 
 class ClientServer:
     def __init__(self):
-        self.data = "0,0"
+        self.data = "1.0|1.0"
 
         try:
             # connect to the socket
             # SOCK_STREAM means TCP socket
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((HOST, PORT))
-            self.sendData()
         except:
             self.__raiseExcNotConnected()
 
@@ -34,17 +33,14 @@ class ClientServer:
     def __raiseExcNotConnected(self):
         warnings.warn("The client is not connected")
 
-    def sendData(self):
-        #if self.isConnected() is not True:
+    def sendData(self, _data):
+        self.data = _data
+                #if self.isConnected() is not True:
         #    return
         self.sock.sendall(self.data.encode("utf-8"))
 
         response = self.sock.recv(1024).decode("utf-8")
         print(response)
-
-    def sendData(self, _data):
-        self.data = _data
-        self.sendData()
 
 
 if __name__ == "__main__":
