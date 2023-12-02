@@ -2148,8 +2148,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e596f7cd8f478543b579af2f4aaaa2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entireAvatar:
+    name: default
+    target: {fileID: 1727207299}
+    wantedPosition: {x: 0, y: 0, z: 0}
   animCenter: {fileID: 321078980}
-  multiplier: {x: 0.001, y: -0.001}
+  multiplier: {x: 0.002, y: -0.002}
   components:
   - name: Mass center
     target: {fileID: 538355657}

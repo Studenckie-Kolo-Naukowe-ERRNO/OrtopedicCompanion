@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class IKMotionController : MonoBehaviour
 {
+    [SerializeField] private IKComponent entireAvatar;
     [SerializeField] private Transform animCenter;
     [SerializeField] private Vector2 multiplier;
     [SerializeField] private IKComponent[] components;
@@ -16,8 +17,9 @@ public class IKMotionController : MonoBehaviour
         {
             components[i].MoveTarget(Time.deltaTime* framerate);
         }
+        entireAvatar.MoveTarget(Time.deltaTime * framerate);
 
-        if(Time.time > nextFrameUpdate)
+        if (Time.time > nextFrameUpdate)
         {
             nextFrameUpdate = Time.time + (1/framerate);
             UpdateComponents();
@@ -31,12 +33,16 @@ public class IKMotionController : MonoBehaviour
         {
             data[i] *= multiplier;
         }
+       
         Vector2 massCenter = (data[12]+data[11])/2;
 
-        //Vector2 offset = new Vector2(0, animCenter.transform.localPosition.y - massCenter.y);
+        Vector2 offset = new Vector2(0, animCenter.transform.localPosition.y - massCenter.y);
 
-        components[0].SetTargetPosition(massCenter);// + offset);
-        components[1].SetTargetPosition(data[9]);//  + offset);
-        components[2].SetTargetPosition(data[10]);//  + offset);;
+        components[0].SetTargetPosition(massCenter + offset);
+        components[1].SetTargetPosition(data[10] + offset);
+        components[2].SetTargetPosition(data[9] + offset);
+
+        float offsetXaxis = massCenter.x - animCenter.transform.localPosition.x;
+        entireAvatar.SetTargetPosition(new Vector2(offsetXaxis, 0));
     }
 }
