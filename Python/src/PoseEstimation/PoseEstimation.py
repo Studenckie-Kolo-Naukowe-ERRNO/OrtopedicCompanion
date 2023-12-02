@@ -9,6 +9,8 @@ import warnings
 
 MODEL_PATH = "yolov8m-pose.pt"
 
+EMPTY_ARRY = numpy.array([[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]])
+
 
 class PoseEstimator:
     def __init__(self, src=0):
@@ -16,9 +18,10 @@ class PoseEstimator:
         if self.device == 'cpu':
             warnings.warn("The model will be using the *CPU*, instead of the CUDA.")
 
-        # check if file is downloaded
+        # check if model is downloaded
         if os.path.exists(MODEL_PATH):
-            self.model = torch.load(MODEL_PATH)
+            # @TODO
+            self.model = YOLO(MODEL_PATH)
         else:
             self.model = YOLO(MODEL_PATH)
 
@@ -27,20 +30,26 @@ class PoseEstimator:
         self.conv = 0.3
         self.source = src
 
-        # what is the start position, left or right? @TODO
+        # The left side is the start position
         self.trackedPose = [0, 0]
 
-    def __estimateAllPoses(self) -> list:
-        return self.model(source=self.source, show=False, conf=self.conv, save=False)
+    def __estimateAllPoses(self, frame: numpy.ndarray) -> list:
+        return self.model(source=frame, show=False, conf=self.conv, save=False)
 
-    def getTrackedPose(self) -> numpy.ndarray:
-        result = self.__estimateAllPoses()
+    def getTrackedPose(self, frame: numpy.ndarray) -> numpy.ndarray:
+        result = self.__estimateAllPoses(frame)
         index = 0
         minDistance = 10000
 
         for res in result:
             # tensor to ndarray
             persons = res.keypoints.xy.cpu().numpy()
+
+            try:
+                persons[index][0]
+            except:
+                # nothing was detected
+                return EMPTY_ARRY
 
             # if there is only one person detected, just return it
             if len(persons) <= 1:
