@@ -39,9 +39,8 @@ class ClientServer:
         #if self.isConnected() is not True:
         #    return
         self.sock.sendall(self.data.encode("utf-8"))
-
-        response = self.sock.recv(1024).decode("utf-8")
-        print(response)
+        #response = self.sock.recv(1024).decode("utf-8")
+        #print(response)
 
 
 if __name__ == "__main__":

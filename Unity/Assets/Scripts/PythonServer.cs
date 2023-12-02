@@ -4,95 +4,100 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using System.Collections.Generic;
+using System;
 
 // https://github.com/ConorZAM/Python-Unity-Socket/blob/master/MyListener.cs
 
 public class PythonServer : MonoBehaviour
 {
-    private Thread thread;
-    private int connectionPort = 25001;
-    private TcpListener server;
+    public static PythonServer Instance;
+    private TcpListener listener;
+    // Create handle to connected tcp client. 
     private TcpClient client;
-    
-    private bool running;
-    public bool IsRunning() { return running; }
+    // Background thread for TcpServer workload.
+    private Thread listenerThread;
+    private const int connectionPort = 25001;
 
-    [SerializeField]private List<Vector2> data;
+    bool running = true;
+
+
+    [SerializeField]private List<Vector2> data = new List<Vector2>();
+    private const char SEPERATOR = '|';
+
     public List<Vector2> GetData() { return data; }
-
     private void Start()
     {
-        data = new List<Vector2>();
-        Vector2 vec = new Vector2(0.0f, 0.0f);
-        for (int i = 0; i < 17; i++)    data.Add(vec);
-
+        if (Instance == null) Instance = this;
+        else 
+        {
+            Destroy(gameObject);
+            return;
+        } 
+        for (int i = 0; i < 17; i++) data.Add(Vector2.zero);
 
         // Receive on a separate thread so Unity doesn't freeze waiting for data
-        ThreadStart ts = new ThreadStart(StartConnection);
-        thread = new Thread(ts);
-        thread.Start();
+        listenerThread = new Thread(new ThreadStart(IncomingData));
+        listenerThread.IsBackground = true;
+        listenerThread.Start();
     }
-
-    private void StartConnection()
+    private void OnDestroy()
     {
-        // Create the server
-        server = new TcpListener(IPAddress.Any, connectionPort);
-        server.Start();
-        
+        running = false;
+    }
+    private void OnApplicationQuit()
+    {
+        running = false;
+    }
+    private void IncomingData()
+    {
+        listener = new TcpListener(IPAddress.Parse("127.0.0.1"), 25001);
+        listener.Start();
         Debug.Log("Server is listening");
+        Byte[] bytes = new Byte[1024];
 
-        // Create a client to get the data stream
-        client = server.AcceptTcpClient();
-
-        // Start listening
         running = true;
-        while (running) ReceiveData();
-
-        server.Stop();
-    }
-
-    private void ReceiveData()
-    {
-        // Read data from the network stream
-        NetworkStream nwStream = client.GetStream();
-        byte[] buffer = new byte[client.ReceiveBufferSize];
-        int bytesRead = nwStream.Read(buffer, 0, client.ReceiveBufferSize);
-
-        // Decode the bytes into a string
-        string dataReceived = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-        // Make sure we're not getting an empty string
-        //dataReceived.Trim();
-        if (dataReceived != null && dataReceived != "")
+        while (running)
         {
-            // Convert the received string of data to the format we are using
-            data = ParseData(dataReceived);
-            nwStream.Write(buffer, 0, bytesRead);
+            using (client = listener.AcceptTcpClient())
+            {			
+                using (NetworkStream stream = client.GetStream())// Get a stream object for reading 		
+                {
+                    int length;
+                    // Read incomming stream into byte arrary. 						
+                    while ((length = stream.Read(bytes, 0, bytes.Length)) != 0)
+                    {
+                        var incommingData = new byte[length];
+                        Array.Copy(bytes, 0, incommingData, 0, length); 							
+                        string clientMessage = Encoding.ASCII.GetString(incommingData);
+                        ParseData(clientMessage);
+                    }
+                    //byte[] response = Encoding.UTF8.GetBytes("Hello from the server!");
+                    //nwStream.Write(response, 0, response.Length);
+                }
+            }
         }
+        listener.Stop();
+        Debug.Log("Server closed");
     }
-
-    private char SEPERATOR = '|';
 
     // Use-case specific function, need to re-write this to interpret whatever data is being sent
-    private List<Vector2> ParseData(string dataString)
+    private void ParseData(string dataString)
     {
-        List<Vector2> result = new List<Vector2>();
-        Debug.Log(dataString);
-
-        // Split the elements into an array
+        dataString=dataString.Replace('.', ',');
         string[] strArray = dataString.Split(SEPERATOR);
 
         Vector2 vec = new Vector2(0, 0);
-        for (int i = 0; i < strArray.Length; i += 2)
+        for (int i = 0; i < strArray.Length-1; i += 2)
         {
-            vec = new Vector2(
-                float.Parse(strArray[i]),
-                float.Parse(strArray[i + 1]));
+            float x = -0.13f;
+            float y = -0.13f;
+            if (float.TryParse(strArray[i], out float xx))  x = xx; 
+            else  Debug.LogWarning($"Cant parse pos X {i}/{strArray.Length} : {strArray[i]}"); 
 
-            data[(int)(i / 2)] = vec;
+            if (float.TryParse(strArray[i + 1], out float yy))  y = yy; 
+            else  Debug.LogWarning($"Cant parse pos Y {i + 1}/{strArray.Length} : {strArray[i + 1]}");
+
+            data[(int)(i / 2)]=(new Vector2(x, y));
         }
-
-
-        return result;
     }
 }
