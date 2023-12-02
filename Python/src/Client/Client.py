@@ -10,14 +10,6 @@ class ClientServer:
     def __init__(self):
         self.data = "1.0|1.0"
 
-        try:
-            # connect to the socket
-            # SOCK_STREAM means TCP socket
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.connect((HOST, PORT))
-        except:
-            self.__raiseExcNotConnected()
-
     def __del__(self):
         self.sock.close()
 
@@ -35,7 +27,16 @@ class ClientServer:
 
     def sendData(self, _data):
         self.data = _data
-                #if self.isConnected() is not True:
+        try:        
+            # connect to the socket
+            # SOCK_STREAM means TCP socket
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.connect((HOST, PORT))
+        except:
+            self.__raiseExcNotConnected()
+
+
+        #if self.isConnected() is not True:
         #    return
         self.sock.sendall(self.data.encode("utf-8"))
 

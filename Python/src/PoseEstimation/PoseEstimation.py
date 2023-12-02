@@ -9,6 +9,8 @@ import warnings
 
 MODEL_PATH = "yolov8m-pose.pt"
 
+EMPTY_ARRY = numpy.array([[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]])
+
 
 class PoseEstimator:
     def __init__(self, src=0):
@@ -47,7 +49,7 @@ class PoseEstimator:
                 persons[index][0]
             except:
                 # nothing was detected
-                return numpy.array([1.0,1.0])
+                return EMPTY_ARRY
 
             # if there is only one person detected, just return it
             if len(persons) <= 1:

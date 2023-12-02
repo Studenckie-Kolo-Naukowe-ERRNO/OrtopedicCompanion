@@ -7,13 +7,16 @@ import numpy as np
 
 SEPERATOR = '|'
 
+EMPTY_ARRY = numpy.array([[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]])
+EMPTY_ARRY_STR = "1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0|1.0"
+
 
 def convertData(arr: np.array) -> str:
     result = ""
     try:
         rows, cols = arr.shape
     except:
-        return "1.0|1.0"
+        return "1.0|1.0|"
 
     for i in range(rows):
         for j in range(cols):
@@ -38,7 +41,7 @@ def main():
             break
 
         data = est.getTrackedPose(frame)
-        if data is not numpy.array([1.0, 1.0]):
+        if data is not EMPTY_ARRY:
             print(convertData(data))
             cli.sendData(convertData(data))
 
