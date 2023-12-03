@@ -1,2 +1,3 @@
 # Model joint labeling - topology
-![alt text](https://github.com/Studenckie-Kolo-Naukowe-ERRNO/OrtopedicCompanion/tree/ServerCommunication/Python/docs/poseModel/coco-17-skeleton-topology.png)
+### Note: counting from 1
+<img src="1701625077770.jpg">

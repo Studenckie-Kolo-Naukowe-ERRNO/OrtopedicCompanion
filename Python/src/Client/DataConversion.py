@@ -1,14 +1,16 @@
-import numpy as np
+import numpy
 
 SEPERATOR = '|'
 
+EMPTY_ARRY = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
 
-def convertData(arr: np.array) -> str:
+
+def convertData(arr: numpy.array) -> str:
     result = ""
     try:
         rows, cols = arr.shape
     except:
-        return "1.0|1.0"
+        return convertData(EMPTY_ARRY)
 
     for i in range(rows):
         for j in range(cols):
