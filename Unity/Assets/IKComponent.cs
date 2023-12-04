@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 [System.Serializable]
 public class IKComponent
@@ -12,20 +13,36 @@ public class IKComponent
     [SerializeField] private Vector3 wantedPosition;
     float moveTime = 0;
 
-    public void SetTargetPosition(Vector3 newWantedPosition)
-    {
-        if (target == null) return;
-        startPosition = target.transform.position;
-        wantedPosition = newWantedPosition;
+    Vector3 moveVector = Vector3.zero;
+    int framesWithoutData = 0;
 
-        moveTime = 0;
-    }
-    public void SetTargetPosition(Vector2 newWantedPosition)
+    public void SetTargetPosition(Vector3 newWantedPosition, bool shouldUpdate = true)
     {
         if (target == null) return;
+
         startPosition = target.transform.position;
-        wantedPosition.x = newWantedPosition.x;
-        wantedPosition.y = newWantedPosition.y;
+        wantedPosition = shouldUpdate ? newWantedPosition : startPosition;
+        /*TO-DO
+         * If the update should not take place, continue moving based on the previous frame for X frames or until data is received
+         */
+
+        if (shouldUpdate)
+        {
+            wantedPosition = newWantedPosition;
+            moveVector = wantedPosition - startPosition;
+            framesWithoutData = 0;
+        }
+        //Something is off
+        else if (framesWithoutData < 5)
+        {
+            wantedPosition = startPosition + moveVector;
+            framesWithoutData ++;
+        }
+        else
+        {
+            wantedPosition = startPosition;
+            framesWithoutData ++;
+        }
 
         moveTime = 0;
     }

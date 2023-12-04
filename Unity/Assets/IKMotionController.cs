@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class IKMotionController : MonoBehaviour
@@ -7,10 +8,16 @@ public class IKMotionController : MonoBehaviour
     [SerializeField] private IKComponent entireAvatar;
     [SerializeField] private Transform animCenter;
     [SerializeField] private Vector2 multiplier;
+    [SerializeField] private Vector2 massCenter;
     [SerializeField] private IKComponent[] components;
     [SerializeField] private float framerate = 30.0f;
+    [SerializeField] private TextMeshProUGUI debugMultiplier;
     float nextFrameUpdate = 0;
 
+    private void Start()
+    {
+        debugMultiplier.SetText($"[{multiplier.x},{multiplier.y}]");
+    }
     private void Update()
     {
         for (int i = 0; i < components.Length; i++)
@@ -34,15 +41,33 @@ public class IKMotionController : MonoBehaviour
             data[i] *= multiplier;
         }
        
-        Vector2 massCenter = (data[12]+data[11])/2;
+        if (data[0].x <= -1) 
+        {
+            Debug.Log($"NO CENTER {data[0].x}");
+        }
+        else
+        {
+            massCenter = data[0];
+        }
 
         Vector2 offset = new Vector2(0, animCenter.transform.localPosition.y - massCenter.y);
 
-        components[0].SetTargetPosition(massCenter + offset);
-        components[1].SetTargetPosition(data[10] + offset);
-        components[2].SetTargetPosition(data[9] + offset);
+        components[0].SetTargetPosition(massCenter + offset, massCenter[0] > -1.0f);
+        components[1].SetTargetPosition(massCenter + data[10] + offset);
+        components[2].SetTargetPosition(massCenter + data[9]  + offset);
 
         float offsetXaxis = massCenter.x - animCenter.transform.localPosition.x;
-        entireAvatar.SetTargetPosition(new Vector2(offsetXaxis, 0));
+        entireAvatar.SetTargetPosition(new Vector2(offsetXaxis, 0), massCenter[0] > -1.0f);
+    }
+
+    public void ChangeMultiplierX(float newX)
+    {
+        multiplier.x = newX;
+        debugMultiplier.SetText($"[{multiplier.x},{multiplier.y}]");
+    }
+    public void ChangeMultiplierY(float newY)
+    {
+        multiplier.y = newY;
+        debugMultiplier.SetText($"[{multiplier.x},{multiplier.y}]");
     }
 }
